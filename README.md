@@ -146,9 +146,9 @@ Using a web browser of choice, head to <http://localhost:8002/default/services>.
 ## Populating the Microservice Database
 
 
-In order to test our Microservice, we will need to populate the database it uses. Once all containers are up and running, run the following command, replacing `{DATABASE_USERNAME}` with the `POSTGRES_USER` environment variable value for the `db` container in the `docker-compose.yaml` file:
+In order to test our Microservice, we will need to populate the database it uses. Once all containers are up and running, run the following command, replacing `"DATABASE_USERNAME"` with the `POSTGRES_USER` environment variable value for the `db` container in the `docker-compose.yaml` file:
 ```
-docker exec -it db psql -U {DATABASE_USERNAME} -d {DATABASE_USERNAME} -f /tmp/Mock_data.sql
+docker exec -it db psql -U "DATABASE_USERNAME" -d "DATABASE_USERNAME" -f /tmp/Mock_data.sql
 ```
 This will fill our `db` postgres database container with 1000 Person entries  from the file `/db/Mock_data.sql`.
 
