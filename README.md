@@ -17,6 +17,7 @@ This Github repository contains a Springboot Microservice with a Postgres Databa
         * [Grafana](#grafana)
     * [Cleaning up Exited Containers](#cleaning-up-exited-containers)
 * [Kong API Gateway](#kong-api-gateway)
+* [Populating the Microservice Database](#populating-the-microservice-database)
 * [Testing the Microservice](#testing-the-microservice)
 * [Monitoring the Microservice](#monitoring-the-microservice)
 
@@ -142,7 +143,8 @@ While we can access the microservice through the local host on port 8080, we wan
 
 Using a web browser of choice, head to <http://localhost:8002/default/services>. You should see a list of services under the `default` workspace and a service called `PeoplePerson-Get`. If you click on that item of the list then select the `Routes` tab, you should see a list of routes connected to the service and a route called `PeoplePerson-GetRoute`.
 
-## Populating our App Database
+## Populating the Microservice Database
+
 
 In order to test our Microservice, we will need to populate the database it uses. Once all containers are up and running, run the following command, replacing `{DATABASE_USERNAME}` with the `POSTGRES_USER` environment variable value for the `db` container in the `docker-compose.yaml` file:
 ```
