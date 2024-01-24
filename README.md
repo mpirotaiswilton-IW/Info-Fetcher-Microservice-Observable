@@ -13,9 +13,12 @@ This Github repository contains a Springboot Microservice with a Postgres Databa
         * [pgAdmin](#pgadmin)
         * [Both databases](#both-databases)
         * [Kong Container](#kong-container)
+        * [Prometheus](#prometheus)
+        * [Grafana](#grafana)
     * [Cleaning up Exited Containers](#cleaning-up-exited-containers)
 * [Kong API Gateway](#kong-api-gateway)
 * [Testing the Microservice](#testing-the-microservice)
+* [Monitoring the Microservice](#monitoring-the-microservice)
 
 
 ## Setup and Pre-requisites
@@ -46,14 +49,16 @@ This Github repository contains a Springboot Microservice with a Postgres Databa
 docker-compose up -d --build
 ```
 
-3. 7 docker containers should now be running:
+3. 9 docker containers should now be running:
     * `microservice`: where the spring-boot api image, built using a Dockerfile, is containerized
-    * `db`: where a Postgres database is containerized and used by the API
-    * `kong-gateway`: where a Kong API gateway is containerized to route the API
-    * `kong-db`: where a Postgres database is containerized and used by the Kong gateway
-    * `kong-migration`: where a temporary Kong API Gateway runs the `kong migrations bootstrap` command to initialize the `kong-gateway` container
-    * `pgadmin`: where a pgAdmin container is used to access both Postgres databases we have containerized.
+    * `db`: a Postgres database container and used by the API
+    * `kong-gateway`: a Kong API gateway container to route the API
+    * `kong-db`: a Postgres database container used by the Kong gateway
+    * `kong-migration`: a temporary Kong API Gateway that runs the `kong migrations bootstrap` command to initialize the `kong-gateway` container
+    * `pgadmin`: a pgAdmin container used to access both Postgres databases we have containerized.
     * `service-init`: where a python script runs to set up our `kong-gateway` container with all the services and routes needed to access our microservice.
+    * `prometheus`: a Prometheus monitoring container for our API Microservice.
+    * `grafana`: a Grafana metrics visualization dashboard container, integrating seamlessly with the `prometheus` container
 
 4. The microservice is now running, ready for use and is connected to the Kong API Gateway.
 
@@ -105,11 +110,28 @@ You can change these credentials under the following `pgadmin` container environ
 
 ##### Kong Container
 
-Using a web browser of choice, head to <http://localhost:8002/>. You should have accessed the Kong Manager GUI web page.
+Using a web browser of your choosing, head to <http://localhost:8002/>. You should have accessed the Kong Manager GUI web page.
+
+##### Prometheus
+
+Using a web browser of your choosing, head to <http://localhost:9090/>. You should be directed to a Prometheus web page. If you head to <http://localhost:9090/targets/>, you should see 2 targets listed, each with one job with a state of `UP`:
+
+* `prometheus` 
+* `spring-actuator`
+
+##### Grafana
+
+Using a web browser of your choosing, head to <http://localhost:3000/>. You should be directed to a Grafana login page. The default crededntials are as follows:
+
+* Email or Password: `admin`
+* Password: `admin`
+
+After logging in, you will be prompted to change the log in password. While this step can be skipped, it is highly recommended to do so for increased security. After this, you will be redirected the Grafana container's home page.
 
 #### Cleaning up Exited Containers
 
 At this point, there are 2 container which are no longer running: `kong-migration` and `service-init`. These containers have only ran to initialize and populate the Kong API gateway. To remove these exited containers, run the following command in a seperate CLI window: 
+
 ```
 docker container prune -f
 ```
@@ -126,7 +148,7 @@ In order to test our Microservice, we will need to populate the database it uses
 ```
 docker exec -it db psql -U {DATABASE_USERNAME} -d {DATABASE_USERNAME} -f /tmp/Mock_data.sql
 ```
-This will fill our `db` postgres database container with testing data with the file `/db/Mock_data.sql`.
+This will fill our `db` postgres database container with 1000 Person entries  from the file `/db/Mock_data.sql`.
 
 ## Testing the Microservice
 
@@ -145,3 +167,12 @@ This will fill our `db` postgres database container with testing data with the f
     "sex": "Female"
 }
 ```
+
+## Monitoring the Microservice
+
+To monitor the microservice, we can use the `grafana` container we deployed. Using the web browser of your choosing, head to <http://localhost:3000/dashboards>. Under the `Microservice` folder, click on `Basic Dashboard`. You should then be directed to a dashboard with 5 panels: On the left there is the microservice Uptime, Start time date and CPU usage. On the right are the total number of requests resulting in 2XX responses and in 4XX responses.
+
+* Using the provided Postman collection, Send a request from the endpoint "Get Person by ID" (`http://localhost:8080/person/{Number between 1 and 1000}`) 5 times.
+* In the Grafana Dashboard, you should see an increase of 5 in the "2XX Response Count" graph
+* Using the provided Postman collection, Send a request from the endpoint "Get Person by ID", making sure to set the path variable to a number greater than a 1000 (eg. `http://localhost:8080/person/123456`) 4 times.
+* In the Grafana Dashboard, you should see an increase of 4 in the "4XX Response Count" graph
