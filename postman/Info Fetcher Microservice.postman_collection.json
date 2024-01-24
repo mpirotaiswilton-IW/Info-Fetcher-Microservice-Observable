@@ -1,0 +1,48 @@
+{
+	"info": {
+		"_postman_id": "ae94e8fe-0b77-4fec-bd92-c72379157cfd",
+		"name": "Info Fetcher Microservice",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31344529"
+	},
+	"item": [
+		{
+			"name": "Get People",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/person/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"person",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Person by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/person/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"person",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
